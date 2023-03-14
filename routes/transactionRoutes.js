@@ -11,4 +11,5 @@ router
 router
     .route('/:id')
     .delete(transactionController.remove)
+    .get(transactionController.getOne)
 module.exports = router;

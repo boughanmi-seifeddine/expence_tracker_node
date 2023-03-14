@@ -15,6 +15,9 @@ class Transaction {
         return this.getQueryPromise('select * from transaction ', [])
     }
 
+    static getOneTransaction(id) {
+        return this.getQueryPromise('select * from transaction where id = ?', [id])
+    }
     static createTransaction(text, amount = 0) {
         return this.getQueryPromise('insert into transaction (text, amount) value (?,?)', [text, amount])
     }

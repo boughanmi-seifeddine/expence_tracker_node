@@ -29,15 +29,33 @@ exports.getAll = (req, res) => {
         }))
     })
 }
-exports.create = (req, res) => {
-    transaction.createTransaction(req.body.text, req.body.amount).then((data) => {
-        const createdId = data.insertId - 1
-        transaction.getAllTransactions().then((data) => {
+exports.getOne = (req, res) => {
+    transaction.getOneTransaction(req.params.id).then((data) => {
             res.statusCode = 201;
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({
                 status: "success",
-                data: data[createdId]
+                data: data
+            }))
+    })
+       .catch((e) => {
+        res.statusCode = 500;
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify({
+            status: 'error',
+            message: "error with sql query...",
+            detail: e
+        }))
+    })
+}
+exports.create = (req, res) => {
+    transaction.createTransaction(req.body.text, req.body.amount).then((data) => {
+        transaction.getOneTransaction(data.insertId).then((data) => {
+            res.statusCode = 201;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({
+                status: "success",
+                data: data
             }))
         })
     }).catch((e) => {
@@ -46,26 +64,28 @@ exports.create = (req, res) => {
         res.end(JSON.stringify({
             status: 'error',
             message: "error with sql query...",
-            detail: e.sqlMessage
+            detail: "sql syntax error"
         }))
     })
 }
 exports.remove = (req, res) => {
     const id = req.params.id
-    transaction.deleteTransaction(id).then((data) => {
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({
-            status: " deleted successfully ...",
-            data: data
-        }))
-    }).catch((e) => {
-        res.statusCode = 500;
-        res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify({
-            status: 'error',
-            message: "error with sql query...",
-            detail: e.sqlMessage
-        }))
+    transaction.getOneTransaction(id).then((data) => {
+        transaction.deleteTransaction(id).then(() => {
+            res.statusCode = 200;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({
+                status: " deleted successfully ...",
+                data: data
+            }))
+        }).catch((e) => {
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({
+                status: 'error',
+                message: "error with sql query...",
+                detail: e.sqlMessage
+            }))
+        })
     })
 }

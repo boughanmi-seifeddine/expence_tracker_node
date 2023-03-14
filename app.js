@@ -15,7 +15,7 @@ app.use(express.json());
 const transactionRouter = require('./routes/transactionRoutes');
 app.use('/api/v1/transactions', transactionRouter);
 const port = process.env.PORT || 3001;
-app.listen(3002, () => {
+app.listen(3001, () => {
     console.log(`App running on port ${port}......`);
 });
 module.exports = app
