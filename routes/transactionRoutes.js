@@ -10,6 +10,6 @@ router
     .post(transactionController.checkBody, transactionController.create)
 router
     .route('/:id')
-    .delete(transactionController.remove)
+    .delete(transactionController.getTransaction, transactionController.remove)
     .get(transactionController.getOne)
 module.exports = router;

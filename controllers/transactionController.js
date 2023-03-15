@@ -8,6 +8,12 @@ exports.checkBody = (req, res, next) => {
     }
     next();
 };
+exports.getTransaction = (req, res, next) => {
+    transaction.getOneTransaction(req.params.id).then((data) => {
+        req.oneTransaction = JSON.stringify(data)
+        next();
+    })
+};
 
 exports.getAll = (req, res) => {
     transaction.getAllTransactions().then((data) => {
@@ -70,14 +76,16 @@ exports.create = (req, res) => {
 }
 exports.remove = (req, res) => {
     const id = req.params.id
-    transaction.getOneTransaction(id).then((data) => {
+    if (req.oneTransaction) {
+        const oneTransaction = JSON.parse(req.oneTransaction)
         transaction.deleteTransaction(id).then(() => {
             res.statusCode = 200;
             res.setHeader('Content-Type', 'application/json');
             res.end(JSON.stringify({
                 status: " deleted successfully ...",
-                data: data
+                data: oneTransaction
             }))
+
         }).catch((e) => {
             res.statusCode = 500;
             res.setHeader('Content-Type', 'application/json');
@@ -87,5 +95,6 @@ exports.remove = (req, res) => {
                 detail: e.sqlMessage
             }))
         })
-    })
+    }
+
 }
