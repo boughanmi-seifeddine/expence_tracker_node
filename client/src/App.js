@@ -3,8 +3,8 @@ import {useState, useEffect} from "react";
 import axios from "axios";
 import './components/list/list.component'
 import ListComponent from "./components/list/list.component";
-import IncomeExpense from "./components/incomeexpense/incomeexpence.component";
-import AddTransaction from "./components/addTransaction/addTransaction.component";
+import IncomeExpenseComponent from "./components/incomeexpense/incomeexpence.component";
+import AddTransactionComponent from "./components/addTransaction/addTransaction.component";
 
 function App() {
     const [textInput, setTextInput] = useState("");
@@ -13,6 +13,12 @@ function App() {
     const [expense, setExpense] = useState(0);
     const [transactions, setTransactions] = useState([]);
 
+    const getTransactions = async () => {
+        const response = await axios.get(
+            `api/v1/transactions`
+        );
+        return response.data.data
+    }
     useEffect(() => {
         getTransactions().then((transactions) => {
             setTransactions(transactions)
@@ -25,12 +31,6 @@ function App() {
         })
     }, []);
 
-    const getTransactions = async () => {
-        const response = await axios.get(
-            `api/v1/transactions`
-        );
-        return response.data.data
-    }
 
     const onTextInputChangeHandler = (e) => {
         e.preventDefault()
@@ -77,19 +77,19 @@ function App() {
                     <h1 id="balance">${((income + expense) * 1).toFixed(2)}</h1>
 
                     <div className="inc-exp-container">
-                        <IncomeExpense income={income} expense={expense}></IncomeExpense>
+                        <IncomeExpenseComponent income={income} expense={expense}></IncomeExpenseComponent>
                     </div>
                 </div>
                 <h3>History</h3>
                 <ListComponent transactions={transactions}
                                onDeleteButtonClick={onDeleteButtonClickHandler}></ListComponent>
                 <h3>Add new transaction</h3>
-                <AddTransaction onFormSubmit={onFormSubmitHandler.bind(this)}
+                <AddTransactionComponent onFormSubmit={onFormSubmitHandler.bind(this)}
                                 onTextInputChange={onTextInputChangeHandler.bind(this)}
                                 onAmountInputChange={onAmountInputChangeHandler.bind(this)}
                                 textInput={textInput} amountInput={amountInput}>
 
-                </AddTransaction>
+                </AddTransactionComponent>
             </div>
         </div>
     );
