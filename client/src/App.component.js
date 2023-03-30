@@ -2,12 +2,15 @@ import React, {Component} from 'react';
 import axios from "axios";
 import './components/list/list.component'
 import ListComponent from "./components/list/list.component";
-import IncomeExpense from "./components/incomeexpense/incomeexpence.component";
+import IncomeExpense from "./components/incomeexpense/incomeExpence.component";
 import AddTransaction from "./components/addTransaction/addTransaction.component";
+import {WrapperStyledComponent, AppStyledComponent, AppContainerStyledComponent, ContainerStyledComponent} from './App.style.component'
+import {IncomeExpenseContainerStyledComponent} from './components/incomeexpense/incomeExpense.style.component'
 
-const dummyTransactions = [];
 
-class App extends Component {
+
+
+class AppComponent extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -97,47 +100,39 @@ class App extends Component {
         })
     }
 
-    renderTransaction() {
-        return this.state.transactions.map(transaction => {
-            return <div key={transaction.id}>
-                <li className={transaction.amount >= 0 ? 'plus' : 'minus'}>
-                    {transaction.text} <span>{transaction.amount}</span>
-                    <button className="delete-btn">x</button>
-                </li>
-            </div>
-        })
-    }
-
     render() {
         return (
-            <div className="App">
-                <div className="App-container">
-                    <h2>Expense Tracker</h2>
+            <WrapperStyledComponent>
+                <AppStyledComponent >
+                    <AppContainerStyledComponent >
+                        <h2>Expense Tracker</h2>
 
-                    <div className="container">
-                        <h4>Your Balance</h4>
-                        <h1 id="balance">${((this.state.income + this.state.expense) * 1).toFixed(2)}</h1>
+                        <ContainerStyledComponent >
+                            <h4>Your Balance</h4>
+                            <h1>${((this.state.income + this.state.expense) * 1).toFixed(2)}</h1>
 
-                        <div className="inc-exp-container">
-                            <IncomeExpense income={this.state.income} expense={this.state.expense}></IncomeExpense>
-                        </div>
+                            <IncomeExpenseContainerStyledComponent >
+                                <IncomeExpense income={this.state.income} expense={this.state.expense}></IncomeExpense>
+                            </IncomeExpenseContainerStyledComponent>
 
-                        <h3>History</h3>
-                        <ListComponent transactions={this.state.transactions}
-                                       onDeleteButtonClick={this.onDeleteButtonClickHandler}></ListComponent>
+                            <h3>History</h3>
+                            <ListComponent transactions={this.state.transactions}
+                                           onDeleteButtonClick={this.onDeleteButtonClickHandler}></ListComponent>
 
-                        <h3>Add new transaction</h3>
-                        <AddTransaction onFormSubmit={this.onFormSubmitHandler.bind(this)}
-                                        onTextInputChange={this.onTextInputChangeHandler.bind(this)}
-                                        onAmountInputChange={this.onAmountInputChangeHandler.bind(this)}
-                                        textInput={this.state.textInput} amountInput={this.state.amountInput}>
+                            <h3>Add new transaction</h3>
+                            <AddTransaction onFormSubmit={this.onFormSubmitHandler.bind(this)}
+                                            onTextInputChange={this.onTextInputChangeHandler.bind(this)}
+                                            onAmountInputChange={this.onAmountInputChangeHandler.bind(this)}
+                                            textInput={this.state.textInput} amountInput={this.state.amountInput}>
 
-                        </AddTransaction>
-                    </div>
-                </div>
-            </div>
-        );
+                            </AddTransaction>
+                        </ContainerStyledComponent>
+                    </AppContainerStyledComponent>
+                </AppStyledComponent>
+            </WrapperStyledComponent>
+
+    );
     }
 }
 
-export default App;
+export default AppComponent;
