@@ -5,14 +5,19 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "server": "nodemon app.js",
+    "client": "npm start --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "boughanmi seifeddine",
   "license": "ISC",
   "dependencies": {
     "express": "^4.18.2",
+    "morgan": "^1.10.0",
     "mysql": "^2.18.1",
-    "nodemon": "^2.0.21",
-    "morgan": "^1.10.0"
+    "nodemon": "^2.0.21"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1"
   }
 }

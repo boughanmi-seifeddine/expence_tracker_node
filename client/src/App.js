@@ -1,97 +1,25 @@
-import {useState, useEffect} from "react";
-
-import axios from "axios";
-import './components/list/list.component'
+import { GlobalProvider } from './context/GlobalState';
 import ListComponent from "./components/list/list.component";
 import IncomeExpenseComponent from "./components/incomeexpense/incomeexpence.component";
 import AddTransactionComponent from "./components/addTransaction/addTransaction.component";
 
 function App() {
-    const [textInput, setTextInput] = useState("");
-    const [amountInput, setAmountInput] = useState(0);
-    const [income, setIncome] = useState(0);
-    const [expense, setExpense] = useState(0);
-    const [transactions, setTransactions] = useState([]);
-
-    const getTransactions = async () => {
-        const response = await axios.get(
-            `api/v1/transactions`
-        );
-        return response.data.data
-    }
-    useEffect(() => {
-        getTransactions().then((transactions) => {
-            setTransactions(transactions)
-            setIncome(transactions.reduce((cum, transaction) => {
-                return cum += transaction.amount > 0 ? transaction.amount : 0
-            }, 0))
-            setExpense(transactions.reduce((cum, transaction) => {
-                return cum += transaction.amount < 0 ? transaction.amount : 0
-            }, 0))
-        })
-    }, []);
-
-
-    const onTextInputChangeHandler = (e) => {
-        e.preventDefault()
-        setTextInput(e.target.value)
-    }
-
-    const onAmountInputChangeHandler = (e) => {
-        e.preventDefault()
-        setAmountInput(e.target.value * 1)
-    }
-
-    const onDeleteButtonClickHandler = (id) => {
-        axios.delete(`api/v1/transactions/${id}`).then((response) => {
-            const deletedTransaction = [...response.data.data].shift()
-            setTransactions(transactions.filter(element => element.id !== deletedTransaction.id))
-            setIncome(deletedTransaction.amount > 0 ? income - deletedTransaction.amount : income)
-            setExpense(deletedTransaction.amount < 0 ? expense - deletedTransaction.amount : expense)
-        })
-    }
-
-    const onFormSubmitHandler = (e) => {
-        e.preventDefault()
-        if (textInput && amountInput) {
-            axios.post('api/v1/transactions', {text: textInput, amount: amountInput}).then((response) => {
-                setTransactions([...transactions, {
-                    id: response.data.data[0].id,
-                    text: textInput,
-                    amount: amountInput
-                }])
-                setTextInput('')
-                setAmountInput(0)
-                setIncome(amountInput > 0 ? income + amountInput : income)
-                setExpense(amountInput < 0 ? expense - amountInput : expense)
-            })
-        }
-    }
-
     return (
-        <div className="App">
-            <div className="App-container">
-                <h2>Expense Tracker</h2>
-                <div className="container">
-                    <h4>Your Balance</h4>
-                    <h1 id="balance">${((income + expense) * 1).toFixed(2)}</h1>
-
-                    <div className="inc-exp-container">
-                        <IncomeExpenseComponent income={income} expense={expense}></IncomeExpenseComponent>
+        <GlobalProvider>
+            <div className="App">
+                <div className="App-container">
+                    <h2>Expense Tracker</h2>
+                    <div className="container">
+                    <IncomeExpenseComponent></IncomeExpenseComponent>
                     </div>
+                    <h3>History</h3>
+                    <ListComponent></ListComponent>
+                    <h3>Add new transaction</h3>
+                    <AddTransactionComponent></AddTransactionComponent>
                 </div>
-                <h3>History</h3>
-                <ListComponent transactions={transactions}
-                               onDeleteButtonClick={onDeleteButtonClickHandler}></ListComponent>
-                <h3>Add new transaction</h3>
-                <AddTransactionComponent onFormSubmit={onFormSubmitHandler.bind(this)}
-                                onTextInputChange={onTextInputChangeHandler.bind(this)}
-                                onAmountInputChange={onAmountInputChangeHandler.bind(this)}
-                                textInput={textInput} amountInput={amountInput}>
-
-                </AddTransactionComponent>
             </div>
-        </div>
+        </GlobalProvider>
+
     );
 }
 
